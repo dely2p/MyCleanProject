@@ -13,6 +13,7 @@
 		4558F32D2CC7E7C600B46DAA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 4558F32C2CC7E7C600B46DAA /* Alamofire */; };
 		4558F32F2CC7E82A00B46DAA /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = 4558F32E2CC7E82A00B46DAA /* RxBlocking */; };
 		4558F3312CC7E82A00B46DAA /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 4558F3302CC7E82A00B46DAA /* RxRelay */; };
+		457CC5BE2CC7F730006794B8 /* MyCleanProject.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 457CC5BC2CC7F730006794B8 /* MyCleanProject.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		4558F2792CBCF24B00B46DAA /* MyCleanProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyCleanProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4558F28F2CBCF24C00B46DAA /* MyCleanProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyCleanProjectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4558F2992CBCF24C00B46DAA /* MyCleanProjectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyCleanProjectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		457CC5BD2CC7F730006794B8 /* MyCleanProject.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyCleanProject.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -103,6 +105,7 @@
 		4558F2702CBCF24B00B46DAA = {
 			isa = PBXGroup;
 			children = (
+				457CC5BC2CC7F730006794B8 /* MyCleanProject.xcdatamodeld */,
 				4558F27B2CBCF24B00B46DAA /* MyCleanProject */,
 				4558F2922CBCF24C00B46DAA /* MyCleanProjectTests */,
 				4558F29C2CBCF24C00B46DAA /* MyCleanProjectUITests */,
@@ -276,6 +279,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				457CC5BE2CC7F730006794B8 /* MyCleanProject.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -664,6 +668,19 @@
 			productName = RxRelay;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		457CC5BC2CC7F730006794B8 /* MyCleanProject.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				457CC5BD2CC7F730006794B8 /* MyCleanProject.xcdatamodel */,
+			);
+			currentVersion = 457CC5BD2CC7F730006794B8 /* MyCleanProject.xcdatamodel */;
+			path = MyCleanProject.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 4558F2712CBCF24B00B46DAA /* Project object */;
 }
