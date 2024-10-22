@@ -7,6 +7,10 @@
 
 import Foundation
 
+public protocol UserNetworkProtocol {
+    func fetchUser(query: String, page: Int) async -> Result<UserListResult, NetworkError>
+}
+
 final public class UserNetwork {
     private let manager: NetworkManagetProtocol
     
