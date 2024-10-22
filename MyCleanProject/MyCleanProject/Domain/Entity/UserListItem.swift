@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserListResult: Decodable {
+public struct UserListResult: Decodable {
     let totalCount: Int
     let incompleteResults: Bool
     let items: [UserListItem]
@@ -26,7 +26,7 @@ struct UserListResult: Decodable {
     }
 }
 
-struct UserListItem: Decodable {
+public struct UserListItem: Decodable {
     let id: Int
     let login: String
     let imageURL: String
