@@ -48,6 +48,22 @@
 			);
 			target = 4558F2782CBCF24B00B46DAA /* MyCleanProject */;
 		};
+		457CC6532CCCF0CD006794B8 /* Exceptions for "MyCleanProjectTests" folder in "MyCleanProject" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Mock/MockUserRepository.swift,
+				MyCleanProjectTests.swift,
+			);
+			target = 4558F2782CBCF24B00B46DAA /* MyCleanProject */;
+		};
+		457CC6542CCCF0CD006794B8 /* Exceptions for "MyCleanProjectTests" folder in "MyCleanProjectTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Mock/MockUserRepository.swift,
+				MyCleanProjectTests.swift,
+			);
+			target = 4558F28E2CBCF24C00B46DAA /* MyCleanProjectTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -59,14 +75,18 @@
 			path = MyCleanProject;
 			sourceTree = "<group>";
 		};
-		4558F2922CBCF24C00B46DAA /* MyCleanProjectTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MyCleanProjectTests;
-			sourceTree = "<group>";
-		};
 		4558F29C2CBCF24C00B46DAA /* MyCleanProjectUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MyCleanProjectUITests;
+			sourceTree = "<group>";
+		};
+		457CC6512CCCF0CD006794B8 /* MyCleanProjectTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				457CC6532CCCF0CD006794B8 /* Exceptions for "MyCleanProjectTests" folder in "MyCleanProject" target */,
+				457CC6542CCCF0CD006794B8 /* Exceptions for "MyCleanProjectTests" folder in "MyCleanProjectTests" target */,
+			);
+			path = MyCleanProjectTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -107,7 +127,7 @@
 			children = (
 				457CC5BC2CC7F730006794B8 /* MyCleanProject.xcdatamodeld */,
 				4558F27B2CBCF24B00B46DAA /* MyCleanProject */,
-				4558F2922CBCF24C00B46DAA /* MyCleanProjectTests */,
+				457CC6512CCCF0CD006794B8 /* MyCleanProjectTests */,
 				4558F29C2CBCF24C00B46DAA /* MyCleanProjectUITests */,
 				4558F27A2CBCF24B00B46DAA /* Products */,
 			);
@@ -140,6 +160,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				4558F27B2CBCF24B00B46DAA /* MyCleanProject */,
+				457CC6512CCCF0CD006794B8 /* MyCleanProjectTests */,
 			);
 			name = MyCleanProject;
 			packageProductDependencies = (
@@ -166,9 +187,6 @@
 			);
 			dependencies = (
 				4558F2912CBCF24C00B46DAA /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				4558F2922CBCF24C00B46DAA /* MyCleanProjectTests */,
 			);
 			name = MyCleanProjectTests;
 			packageProductDependencies = (

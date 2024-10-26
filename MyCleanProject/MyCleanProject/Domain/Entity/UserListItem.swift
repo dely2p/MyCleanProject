@@ -18,7 +18,7 @@ public struct UserListResult: Decodable {
         case items
     }
     
-    init(from decoder: any Decoder) throws {
+    public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.totalCount = try container.decode(Int.self, forKey: .totalCount)
         self.incompleteResults = try container.decode(Bool.self, forKey: .incompleteResults)
@@ -26,7 +26,7 @@ public struct UserListResult: Decodable {
     }
 }
 
-public struct UserListItem: Decodable {
+public struct UserListItem: Decodable, Hashable {
     let id: Int
     let login: String
     let imageURL: String
