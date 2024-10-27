@@ -9,11 +9,11 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-protocol UserListviewModelProtocol {
+protocol UserListViewModelProtocol {
     func transform(input: UserListViewModel.Input) -> UserListViewModel.Output
 }
 
-public final class UserListViewModel: UserListviewModelProtocol {
+public final class UserListViewModel: UserListViewModelProtocol {
     private let usecase: UserListUsecaseProtocol
     private let disposeBag = DisposeBag()
     private let error = PublishRelay<String>()
@@ -26,7 +26,7 @@ public final class UserListViewModel: UserListviewModelProtocol {
     }
     
     public struct Input { // VC -> VM
-        let tabButonType: Observable<TabButtonType>
+        let tabButtonType: Observable<TabButtonType>
         let query: Observable<String>
         let saveFavorite: Observable<UserListItem>
         let deleteFavorite: Observable<Int>
@@ -45,7 +45,7 @@ public final class UserListViewModel: UserListviewModelProtocol {
                 return
             }
             page = 1
-            fetchUser(query: query, page: 0)
+            fetchUser(query: query, page: page)
             getFavoriteUsers(query: query)
         }.disposed(by: disposeBag)
         
@@ -71,28 +71,39 @@ public final class UserListViewModel: UserListviewModelProtocol {
                 fetchUser(query: query, page: page)
         }.disposed(by: disposeBag)
         
-        let cellData: Observable<[UserListCellData]> = Observable.combineLatest(input.tabButonType, fetchUserList, favoriteUserList, allFavoriteUserList).map { [weak self] tabButtonType, fetchUserList, favoriteUserList, allFavoriteUserList in
+        let cellData: Observable<[UserListCellData]> = Observable.combineLatest(input.tabButtonType, fetchUserList, favoriteUserList, allFavoriteUserList)
+            .do(onNext: { tabType, fetchList, favoriteList, allFavoriteList in
+                print("combineLatest called with:")
+                print("tabButtonType: \(tabType)")
+                print("fetchUserList: \(fetchList)")
+            })
+            .map { [weak self] tabButtonType, fetchUserList, favoriteUserList, allFavoriteUserList in
             var cellData: [UserListCellData] = []
             guard let self = self else { return cellData }
             switch tabButtonType {
-            case .api:
-                let tuple = usecase.checkFavoriteState(fetchUsers: fetchUserList, favoriteUsers: allFavoriteUserList)
-                let userCellList = tuple.map { user, isFavorite in
-                    UserListCellData.user(user: user, isFavorite: isFavorite)
-                }
-                return userCellList
-            case .favorite:
-                let dict = usecase.convertListToDictionary(favoriteUsers: favoriteUserList)
-                let keys = dict.keys.sorted()
-                keys.forEach { key in
-                    cellData.append(.header(key))
-                    if let users = dict[key] {
-                        cellData += users.map { UserListCellData.user(user: $0, isFavorite: true) }
+                case .api:
+                    let tuple = usecase.checkFavoriteState(fetchUsers: fetchUserList, favoriteUsers: allFavoriteUserList)
+                    print("checkFavoriteState result: \(tuple)")
+                    let userCellList = tuple.map { user, isFavorite in
+                        UserListCellData.user(user: user, isFavorite: isFavorite)
+                    }
+                    print("userCellList: \(userCellList)")
+                    return userCellList
+                case .favorite:
+                    let dict = usecase.convertListToDictionary(favoriteUsers: favoriteUserList)
+                    let keys = dict.keys.sorted()
+                    keys.forEach { key in
+                        cellData.append(.header(key))
+                        if let users = dict[key] {
+                            cellData += users.map { UserListCellData.user(user: $0, isFavorite: true) }
+                        }
                     }
                 }
+                return cellData
             }
-            return cellData
-        }
+            .do(onNext: { cellData in
+                print("Prepared cellData: \(cellData)") // Here you can check the final cellData
+            })
         return Output(cellData: cellData, error: error.asObservable())
     }
     
@@ -117,11 +128,12 @@ public final class UserListViewModel: UserListviewModelProtocol {
         let result = usecase.getFavoriteUsers()
         switch result {
         case .success(let users):
+            print("Fetched favorite users: \(users)")
             if query.isEmpty {
                 favoriteUserList.accept(users)
             } else {
                 let filteredUsesrs = users.filter { user in
-                    user.login.contains(query)
+                    user.login.contains(query.lowercased())
                 }
                 favoriteUserList.accept(filteredUsesrs)
             }

@@ -54,12 +54,9 @@ public struct UserListUsercase: UserListUsecaseProtocol {
     
     public func checkFavoriteState(fetchUsers: [UserListItem], favoriteUsers: [UserListItem]) -> [(user: UserListItem, isFavorite: Bool)] {
         let favoriteSet = Set(favoriteUsers)
-        return favoriteSet.map { user in
-            if favoriteUsers.contains(user) {
-                return (user: user, isFavorite: true)
-            } else {
-                return (user: user, isFavorite: false)
-            }
+        return fetchUsers.map { user in
+            let isFavorite = favoriteSet.contains(user)
+            return (user: user, isFavorite: isFavorite)
         }
     }
     

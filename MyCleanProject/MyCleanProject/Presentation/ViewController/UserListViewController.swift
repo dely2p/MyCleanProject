@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 
 class UserListViewController: UIViewController {
-    private let viewModel: UserListviewModelProtocol
+    private let viewModel: UserListViewModelProtocol
     private let disposeBag = DisposeBag()
     private let saveFavorite = PublishRelay<UserListItem>()
     private let deleteFavorite = PublishRelay<Int>()
@@ -35,10 +35,11 @@ class UserListViewController: UIViewController {
     
     private let tableView = {
         let tableView = UITableView()
+        tableView.register(UserTableViewCell.self, forCellReuseIdentifier: UserTableViewCell.id)
         return tableView
     }()
     
-    init(viewModel: UserListviewModelProtocol) {
+    init(viewModel: UserListViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         view.backgroundColor = .white
@@ -50,13 +51,22 @@ class UserListViewController: UIViewController {
     private func bindViewModel() {
         let tabButtonType = tabButtonView.selectedType.compactMap { $0 }
         let query = searchTextField.rx.text.orEmpty.debounce(.microseconds(300), scheduler: MainScheduler.instance)
-        let output = viewModel.transform(input: UserListViewModel.Input(tabButonType: tabButtonType, query: query, saveFavorite: saveFavorite.asObservable(), deleteFavorite: deleteFavorite.asObservable(), fetchMore: fetchMore.asObservable()))
+        let output = viewModel.transform(input: UserListViewModel.Input(tabButtonType: tabButtonType, query: query, saveFavorite: saveFavorite.asObservable(), deleteFavorite: deleteFavorite.asObservable(), fetchMore: fetchMore.asObservable()))
         
-        output.cellData.bind(to: tableView.rx.items) { tableView, index, item in
-            return UITableViewCell()
+        output.cellData
+            .observe(on: MainScheduler.instance)
+            .do(onNext: { cellData in
+                print("Received cellData: \(cellData)") // cellData 수신 확인
+            })
+            .bind(to: tableView.rx.items) { [weak self] tableView, index, cellData in
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: UserTableViewCell.id) as? UserTableViewCell else { return UITableViewCell() }
+            cell.apply(cellData: cellData)
+            return cell
         }.disposed(by: disposeBag)
         
-        output.error.bind { [weak self] errorMessage in
+        output.error
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] errorMessage in
             let alert = UIAlertController(title: "에러", message: errorMessage, preferredStyle: .alert)
             alert.addAction(.init(title: "확인", style: .default))
             self?.present(alert, animated: true)
@@ -64,9 +74,9 @@ class UserListViewController: UIViewController {
     }
     
     private func bindView() {
-        tabButtonView.selectedType.bind { type in
-            print("Type \(type)")
-        }.disposed(by: disposeBag)
+//        tabButtonView.selectedType.bind { type in
+//            print("Type \(type)")
+//        }.disposed(by: disposeBag)
     }
     
     private func setUI() {
@@ -96,65 +106,5 @@ class UserListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-    }
-}
-
-final class TabButtonView: UIStackView {
-    private let tabList: [TabButtonType]
-    private let disposeBag = DisposeBag()
-    public let selectedType: BehaviorRelay<TabButtonType?>
-    init(tabList: [TabButtonType]) {
-        self.tabList = tabList
-        self.selectedType = BehaviorRelay(value: tabList.first)
-        super.init(frame: .zero)
-        alignment = .fill
-        distribution = .fillEqually
-        addButtons()
-        (arrangedSubviews.first as? UIButton)?.isSelected = true
-    }
-    
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func addButtons() {
-        tabList.forEach { tabType in
-            let button = TabButton(type: tabType)
-            button.rx.tap.bind { [weak self] in
-                self?.arrangedSubviews.forEach({ view in
-                    (view as? UIButton)?.isSelected = false
-                })
-                button.isSelected = true
-                self?.selectedType.accept(tabType)
-            }.disposed(by: disposeBag)
-            addArrangedSubview(button)
-        }
-    }
-}
-
-final class TabButton: UIButton {
-    private let type: TabButtonType
-    
-    override var isSelected: Bool {
-        didSet {
-            if isSelected {
-                backgroundColor = .systemCyan
-            } else {
-                backgroundColor = .white
-            }
-        }
-    }
-    
-    init(type: TabButtonType) {
-        self.type = type
-        super.init(frame: .zero)
-        setTitle(type.rawValue, for: .normal)
-        titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
-        setTitleColor(.black, for: .normal)
-        setTitleColor(.white, for: .selected)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
