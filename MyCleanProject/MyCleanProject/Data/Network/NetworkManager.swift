@@ -8,11 +8,11 @@
 import Foundation
 import Alamofire
 
-protocol NetworkManagetProtocol {
+protocol NetworkManagerProtocol {
     func fetchData<T: Decodable>(url: String, method: HTTPMethod, parameters: Parameters?) async -> Result<T, NetworkError>
 }
 
-public class NetworkManager {
+public class NetworkManager: NetworkManagerProtocol {
     private let session: SessionProtocol
     
     init(session: SessionProtocol) {
