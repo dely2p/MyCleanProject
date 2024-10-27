@@ -160,9 +160,9 @@ public final class UserListViewModel: UserListviewModelProtocol {
     }
 }
 
-public enum TabButtonType {
-    case api
-    case favorite
+public enum TabButtonType: String {
+    case api = "API"
+    case favorite = "Favorite"
 }
 
 public enum UserListCellData {
