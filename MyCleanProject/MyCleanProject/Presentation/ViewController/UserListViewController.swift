@@ -36,6 +36,7 @@ class UserListViewController: UIViewController {
     private let tableView = {
         let tableView = UITableView()
         tableView.register(UserTableViewCell.self, forCellReuseIdentifier: UserTableViewCell.id)
+        tableView.register(HeaderTableViewCell.self, forCellReuseIdentifier: HeaderTableViewCell.id)
         return tableView
     }()
     
@@ -55,12 +56,14 @@ class UserListViewController: UIViewController {
         
         output.cellData
             .observe(on: MainScheduler.instance)
-            .do(onNext: { cellData in
-                print("Received cellData: \(cellData)") // cellData 수신 확인
-            })
             .bind(to: tableView.rx.items) { [weak self] tableView, index, cellData in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: UserTableViewCell.id) as? UserTableViewCell else { return UITableViewCell() }
-            cell.apply(cellData: cellData)
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: cellData.id) else { return UITableViewCell() }
+                (cell as? UserTableViewCell)?.apply(cellData: cellData)
+                guard let cell = cell as? UserTableViewCell, case let .user(user, isFavorite) = cellData else { return UITableViewCell() }
+            
+                cell.favoriteButton.rx.tap.bind {
+                isFavorite ? self?.deleteFavorite.accept(user.id) : self?.saveFavorite.accept(user)
+            }.disposed(by: cell.disposeBag)
             return cell
         }.disposed(by: disposeBag)
         
@@ -74,9 +77,12 @@ class UserListViewController: UIViewController {
     }
     
     private func bindView() {
-//        tabButtonView.selectedType.bind { type in
-//            print("Type \(type)")
-//        }.disposed(by: disposeBag)
+        tableView.rx.prefetchRows.bind { [weak self] indexPath in
+            guard let rows = self?.tableView.numberOfRows(inSection: 0), let itemIndex = indexPath.first?.item else { return }
+            if itemIndex >= rows - 1 {
+                self?.fetchMore.accept(())
+            }
+        }.disposed(by: disposeBag)
     }
     
     private func setUI() {

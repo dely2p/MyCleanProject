@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import UIKit
 
 protocol UserListViewModelProtocol {
     func transform(input: UserListViewModel.Input) -> UserListViewModel.Output
@@ -72,22 +73,15 @@ public final class UserListViewModel: UserListViewModelProtocol {
         }.disposed(by: disposeBag)
         
         let cellData: Observable<[UserListCellData]> = Observable.combineLatest(input.tabButtonType, fetchUserList, favoriteUserList, allFavoriteUserList)
-            .do(onNext: { tabType, fetchList, favoriteList, allFavoriteList in
-                print("combineLatest called with:")
-                print("tabButtonType: \(tabType)")
-                print("fetchUserList: \(fetchList)")
-            })
             .map { [weak self] tabButtonType, fetchUserList, favoriteUserList, allFavoriteUserList in
             var cellData: [UserListCellData] = []
             guard let self = self else { return cellData }
             switch tabButtonType {
                 case .api:
                     let tuple = usecase.checkFavoriteState(fetchUsers: fetchUserList, favoriteUsers: allFavoriteUserList)
-                    print("checkFavoriteState result: \(tuple)")
                     let userCellList = tuple.map { user, isFavorite in
                         UserListCellData.user(user: user, isFavorite: isFavorite)
                     }
-                    print("userCellList: \(userCellList)")
                     return userCellList
                 case .favorite:
                     let dict = usecase.convertListToDictionary(favoriteUsers: favoriteUserList)
@@ -101,9 +95,6 @@ public final class UserListViewModel: UserListViewModelProtocol {
                 }
                 return cellData
             }
-            .do(onNext: { cellData in
-                print("Prepared cellData: \(cellData)") // Here you can check the final cellData
-            })
         return Output(cellData: cellData, error: error.asObservable())
     }
     
@@ -113,7 +104,7 @@ public final class UserListViewModel: UserListViewModelProtocol {
             let result = await usecase.fetchUser(query: urlAllowedQuery, page: page)
             switch result {
             case .success(let users):
-                if page == 0 {
+                if page == 1 {
                     fetchUserList.accept(users.items)
                 } else {
                     fetchUserList.accept(fetchUserList.value + users.items)
@@ -180,4 +171,15 @@ public enum TabButtonType: String {
 public enum UserListCellData {
     case user(user: UserListItem, isFavorite: Bool)
     case header(String)
+    
+    var id: String {
+        switch self {
+        case .header: HeaderTableViewCell.id
+        case .user: UserTableViewCell.id
+        }
+    }
+}
+
+protocol UserListCellProtocol {
+    func apply(cellData: UserListCellData)
 }
