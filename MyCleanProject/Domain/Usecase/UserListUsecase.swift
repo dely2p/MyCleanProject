@@ -32,12 +32,20 @@ public struct UserListUsercase: UserListUsecaseProtocol {
     
     private let repository: UserRepositoryProtocol
     
+    private var fetchUserList: [UserListItem] = []
+    
     init(repository: UserRepositoryProtocol) {
         self.repository = repository
     }
     
     public func fetchUser(query: String, page: Int) async -> Result<UserListResult, NetworkError> {
         await repository.fetchUser(query: query, page: page)
+        
+//        if page == 1 {
+//            fetchUserList.accept(users.items)
+//        } else {
+//            fetchUserList.accept(fetchUserList.value + users.items)
+//        }
     }
     
     public func getFavoriteUsers() -> Result<[UserListItem], CoreDataError> {
