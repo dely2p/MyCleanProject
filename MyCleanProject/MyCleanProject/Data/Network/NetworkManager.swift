@@ -14,13 +14,18 @@ protocol NetworkManagerProtocol {
 
 public class NetworkManager: NetworkManagerProtocol {
     private let session: SessionProtocol
+    private let apiToken: String
     
     init(session: SessionProtocol) {
         self.session = session
+        guard let token = Environment.value(for: "API_TOKEN") else {
+                    fatalError("API Token is missing in the .env file")
+                }
+        self.apiToken = token
     }
     
-    private let tokenHeader: HTTPHeaders = {
-        let tokenHeader = HTTPHeader(name: "Authorization", value: "")
+    private lazy var tokenHeader: HTTPHeaders = {
+        let tokenHeader = HTTPHeader(name: "Authorization", value: apiToken)
         return HTTPHeaders([tokenHeader])
     }()
     
